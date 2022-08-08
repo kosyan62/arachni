@@ -1,8 +1,8 @@
 #!/bin/bash
 
 PATH_ARACHNI="/usr/local/arachni"
-FILE_DB_PGSQL_TEMPLATE="${PATH_ARACHNI}/system/arachni-ui-web/config/database.yml.pgsql"
-FILE_DB="${PATH_ARACHNI}/system/arachni-ui-web/config/database.yml"
+FILE_DB_PGSQL_TEMPLATE="${PATH_ARACHNI}/.system/arachni-ui-web/config/database.yml.pgsql"
+FILE_DB="${PATH_ARACHNI}/.system/arachni-ui-web/config/database.yml"
 
 setupPostgresqlDB()
 {
