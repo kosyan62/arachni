@@ -12,25 +12,25 @@ RUN apt-get -y install \
     openssh-server \
     wget \
     curl \
-    supervisor \
+    iproute2 \
     unzip
 
-RUN mkdir /var/run/sshd && \
-    mkdir -p /var/log/supervisor && \
-    mkdir -p /etc/supervisor/conf.d
-
-RUN sed -ri 's/^#PermitRootLogin\s+.*/PermitRootLogin yes/' /etc/ssh/sshd_config
-RUN sed -ri 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config
+RUN mkdir /var/run/sshd
 
 #COPY "$PWD"/${ARACHNI_VERSION}-linux-x86_64.tar.gz ${ARACHNI_VERSION}-linux-x86_64.tar.gz
 RUN wget https://github.com/Arachni/arachni/releases/download/v1.6.1.3/${ARACHNI_VERSION}-linux-x86_64.tar.gz && \
-	tar xzvf ${ARACHNI_VERSION}-linux-x86_64.tar.gz && \
+    tar xzvf ${ARACHNI_VERSION}-linux-x86_64.tar.gz && \
     mv ${ARACHNI_VERSION}/ /usr/local/arachni && \
     rm -rf *.tar.gz
 
+RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
+    apt -y install ./google-chrome-stable_current_amd64.deb
+
 COPY "$PWD"/files /
-EXPOSE 22 7331 9292
+EXPOSE 22 7331 9292 9515
 
+RUN echo 'root:'${SERVER_ROOT_PASSWORD} | chpasswd
 RUN  useradd -m arachni && echo "arachni:arachni" | chpasswd && usermod -aG sudo arachni
+USER arachni
 
-CMD entrypoint.sh
+CMD /usr/local/arachni/bin/arachni_rest_server --addres 0.0.0.0 --authentication-username ${ARACHNI_USERNAME} --authentication-password ${ARACHNI_PASSWORD} --only-positives
